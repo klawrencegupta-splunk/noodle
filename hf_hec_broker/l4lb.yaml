@@ -1,0 +1,21 @@
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: splunk-hec-lb
+  namespace: splunk
+spec:
+  selector:
+    app: splunk
+  ports:
+    - port: 32088
+      targetPort: 8088
+      nodePort: 32088
+      protocol: TCP
+  externalTrafficPolicy: Local
+  sessionAffinity: ClientIP
+  type: LoadBalancer
+status:
+  loadBalancer:
+    ingress:
+    - ip: 10.202.14.232

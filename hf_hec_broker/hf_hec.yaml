@@ -1,0 +1,51 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  namespace: splunk
+  name: splunkhec
+  labels:
+    app: splunk
+    role: splunkhec
+    tier: hec
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: splunk
+      role: splunkhec
+      tier: hec
+  template:
+    metadata:
+      labels:
+        app: splunk
+        role: splunkhec
+        tier: hec 
+    spec:
+      volumes:
+        - name: splunk-hec-appdata
+          persistentVolumeClaim:
+             claimName: splunk-hec-appdata
+      hostname: hec
+      dnsPolicy: ClusterFirst
+      dnsConfig:
+        searches:
+          - hec.splunk.svc.cluster.local
+      containers:
+        - name: splunkhec
+          image: splunk/splunk:latest
+          ports:
+           - containerPort: 8088
+             name: splunk
+          volumeMounts:
+           - mountPath: /opt/splunk/etc/apps/splunk_httpinput/
+             name: splunk-hec-appdata
+          env:
+            - name: SPLUNK_HOME
+              value: /opt/splunk
+            - name: SPLUNK_ETC
+              value: /opt/splunk/etc
+            - name: SPLUNK_PASSWORD
+              value: changeme123
+            - name: SPLUNK_START_ARGS
+              value: "--accept-license"

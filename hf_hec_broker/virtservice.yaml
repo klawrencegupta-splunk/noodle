@@ -1,0 +1,18 @@
+---
+apiVersion: networking.istio.io/v1beta1
+kind: VirtualService
+metadata:
+  name: splunkhec
+  namespace: splunk
+spec:
+  hosts:
+  - "*"
+  gateways:
+  - splunk/ingressgateway
+  tls:
+  - match:
+    - sniHosts:
+      - "*"
+    route:
+    - destination:
+        host: hec.klg.net
